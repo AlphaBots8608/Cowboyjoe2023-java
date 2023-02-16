@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 
+import javax.lang.model.util.ElementScanner14;
+
 //imports for lasso control/command and encoders
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -114,6 +116,10 @@ public class Robot extends TimedRobot {
       else if (CSensor.lastdetectedColor == "Cone")
       {
         lassospeed = m_robotContainer.joystick1.getRawAxis(3);
+      }
+      else 
+      {
+        lassospeed = m_robotContainer.joystick1.getRawAxis(3)/4;
       }
       lassoMotor.set(lassospeed);
       ///////////////////////

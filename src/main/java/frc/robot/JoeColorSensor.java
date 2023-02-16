@@ -58,6 +58,7 @@ public class JoeColorSensor extends SubsystemBase {
   private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
   private final Color kConeTarget = new Color(0.345, 0.515, 0.147);
   private final Color kCubeTarget = new Color(0.220, 0.369, 0.412);
+  private final Color kRoomLightingTarget = new Color(0.25, .48, 0.27);
 
   @Override
     public void periodic() {
@@ -105,10 +106,13 @@ public class JoeColorSensor extends SubsystemBase {
       } else if (match.color == kCubeTarget) {
         colorString = "Cube";
         lastdetectedColor = "Cube";
+      } else if (match.color == kRoomLightingTarget) {
+        colorString = "RoomLight";
+        lastdetectedColor = "RoomLight";
       } else {
         colorString = "Unknown";
       }
-  
+      
       /**
        * Open Smart Dashboard or Shuffleboard to see the color detected by the 
        * sensor.
@@ -118,6 +122,9 @@ public class JoeColorSensor extends SubsystemBase {
       SmartDashboard.putNumber("Blue", detectedColor.blue);
       SmartDashboard.putNumber("Confidence", match.confidence);
       SmartDashboard.putString("Detected Color", colorString);
+
+      int objectdistance = m_colorSensor.getProximity();
+      SmartDashboard.putNumber("ObjectDistance", objectdistance);
     }
 
     public void buildColorMatches() {
@@ -126,7 +133,8 @@ public class JoeColorSensor extends SubsystemBase {
       //m_colorMatcher.addColorMatch(kRedTarget);
       //m_colorMatcher.addColorMatch(kYellowTarget);
       m_colorMatcher.addColorMatch(kConeTarget); 
-      m_colorMatcher.addColorMatch(kCubeTarget);     
+      m_colorMatcher.addColorMatch(kCubeTarget); 
+      m_colorMatcher.addColorMatch(kRoomLightingTarget);    
     }
       
 }
