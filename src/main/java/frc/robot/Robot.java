@@ -12,11 +12,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 import javax.lang.model.util.ElementScanner14;
 
-//imports for lasso control/command and encoders
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class. Runs the motors with split
@@ -28,15 +24,12 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
 
-  JoeColorSensor CSensor= new JoeColorSensor();
-  JoePowerDistributionPanel PDP= new JoePowerDistributionPanel();
+
   
   //private final XboxController m_driverController = new XboxController(0);
 
   
-  int lassoMotorCanID = 16;
-  private final CANSparkMax lassoMotor = new CANSparkMax(lassoMotorCanID,MotorType.kBrushless);
-  private RelativeEncoder lassoMotor_encoder; 
+ 
 
   //private final CANSparkMax armLiftMotor = new CANSparkMax(sparkMaxAux3CanID,MotorType.kBrushless);
   //private final CANSparkMax armExtensionMotor = new CANSparkMax(sparkMaxAux1CanID,MotorType.kBrushless);
@@ -59,14 +52,14 @@ public class Robot extends TimedRobot {
     * In order to read encoder values an encoder object is created using the 
     * getEncoder() method from an existing CANSparkMax object
     */
-    lassoMotor_encoder = lassoMotor.getEncoder();
+    
   }
 
   @Override
   public void robotPeriodic() {
-    getEncoderData();
-    PDP.GetPdpData();
-    CSensor.GetColorSensorData();
+    m_robotContainer.LassoSubsystem.getEncoderData();
+    m_robotContainer.PDP.GetPdpData();
+    m_robotContainer.CSensor.GetColorSensorData();
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -106,24 +99,8 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
 
-  
-      ////////////////////////////////////////////
-      double lassospeed = 0;
-      if (CSensor.lastdetectedColor == "Cube")
-      {
-        lassospeed = m_robotContainer.joystick1.getRawAxis(3)/2;
-      }
-      else if (CSensor.lastdetectedColor == "Cone")
-      {
-        lassospeed = m_robotContainer.joystick1.getRawAxis(3);
-      }
-      else 
-      {
-        lassospeed = m_robotContainer.joystick1.getRawAxis(3)/4;
-      }
-      lassoMotor.set(lassospeed);
-      ///////////////////////
     }
+
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
@@ -142,24 +119,6 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {}
 
-  public void getEncoderData()
-  {
-    /**
-     * Encoder position is read from a RelativeEncoder object by calling the
-     * GetPosition() method.
-     * 
-     * GetPosition() returns the position of the encoder in units of revolutions
-     */
-    SmartDashboard.putNumber("Encoder Position", lassoMotor_encoder.getPosition());
-
-    /**
-     * Encoder velocity is read from a RelativeEncoder object by calling the
-     * GetVelocity() method.
-     * 
-     * GetVelocity() returns the velocity of the encoder in units of RPM
-     */
-    SmartDashboard.putNumber("Encoder Velocity", lassoMotor_encoder.getVelocity());
-
-  }
+  
   
 }
