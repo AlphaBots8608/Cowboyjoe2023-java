@@ -18,13 +18,6 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     double CubeSpeed = .25;
     double ConeSpeed = .75;
 
-    //
-    //double lassoinchesperrev = 1.5;
-    //double lassoencodercountsperrev = 42;
-    //double lassoencodercountsperinch = lassoencodercountsperrev/lassoinchesperrev;
-
-    //double Currentlassolength = 0; // this is the current length of the lasso in inches that is 'out' from the motor. 0 is retracted to tightest position (slight slack)
-    
     double minEncoderValue = 0;
     double maxEncoderValue = 205;
 
