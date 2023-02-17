@@ -46,6 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
         // result in both sides moving forward. Depending on how your robot's
         // gearbox is constructed, you might have to invert the left side instead.
         m_leftMotor.setInverted(true);
+        m_rightMotor.setInverted(true);
 
         //set follower motors
         m_leftFollowerMotor.follow(m_leftMotor);
@@ -54,7 +55,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Drive encoder value", getEncoderMeters());
+        //SmartDashboard.putNumber("Drive encoder value", getEncoderMeters());
     }
 
     public void setMotors(double leftSpeed, double rightSpeed) {

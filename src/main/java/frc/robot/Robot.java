@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    m_robotContainer.LassoSubsystem.getEncoderData();
+    
     m_robotContainer.PDP.GetPdpData();
     m_robotContainer.CSensor.GetColorSensorData();
 

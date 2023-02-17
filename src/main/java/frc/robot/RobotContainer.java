@@ -14,9 +14,9 @@ public class RobotContainer {
     int DRIVELeftRightAxis = 1;
 
     //
-    int sparkMaxAux1CanID = 15;
-
-    int sparkMaxAux3CanID = 7;
+    int ArmLifterSparkMaxCanID = 7;
+    
+    int RatchetLinearActuatorsparkMaxCanID = 15;
     
 
     public JoeColorSensor CSensor= new JoeColorSensor();
@@ -26,6 +26,7 @@ public class RobotContainer {
     // private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     // private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     public LassoSubsystem LassoSubsystem = new LassoSubsystem();
+    public ArmExtensionSubsystem ArmExtensionSubsystem = new ArmExtensionSubsystem();
 
     public final Joystick joystick1 = new Joystick(DRIVEJoystickPort);
 
@@ -38,7 +39,8 @@ public class RobotContainer {
         );
         // elevatorSubsystem.setDefaultCommand(new ElevatorJoystickCmd(elevatorSubsystem, 0));
         // intakeSubsystem.setDefaultCommand(new IntakeSetCmd(intakeSubsystem, true));
-        LassoSubsystem.setDefaultCommand(new LassoJoystickCmd(LassoSubsystem,CSensor,()->joystick1.getRawAxis(3)));
+        //LassoSubsystem.setDefaultCommand(new LassoJoystickCmd(LassoSubsystem,CSensor,()->joystick1.getRawAxis(3)));
+        ArmExtensionSubsystem.setDefaultCommand(new ArmExtensionJoystickCmd(ArmExtensionSubsystem,()->joystick1.getRawAxis(3)));
     }
 
     private void configureButtonBindings() {
