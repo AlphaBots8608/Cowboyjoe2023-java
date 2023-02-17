@@ -19,6 +19,7 @@ import com.revrobotics.ColorMatch;
 public class JoeColorSensor extends SubsystemBase {
   
   public String lastdetectedColor = "";
+  int objectdistance = 0;
   //raise the division factor to slow down how often this happens. 
   int divisionfactor = 10;
   int currentPass = 0;
@@ -123,7 +124,7 @@ public class JoeColorSensor extends SubsystemBase {
       SmartDashboard.putNumber("Confidence", match.confidence);
       SmartDashboard.putString("Detected Color", colorString);
 
-      int objectdistance = m_colorSensor.getProximity();
+      objectdistance = m_colorSensor.getProximity();
       SmartDashboard.putNumber("ObjectDistance", objectdistance);
     }
 

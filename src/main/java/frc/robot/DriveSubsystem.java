@@ -17,9 +17,7 @@ public class DriveSubsystem extends SubsystemBase {
     int frontRightSparkMaxCanID = 6;
     int followerRightSparkMaxCanID = 9;
   
-    int sparkMaxAux1CanID = 15;
 
-    int sparkMaxAux3CanID = 7;
 
     private CANSparkMax m_leftMotor;
     private CANSparkMax m_leftFollowerMotor;
@@ -56,7 +54,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        //SmartDashboard.putNumber("Drive encoder value", getEncoderMeters());
+        SmartDashboard.putNumber("Drive encoder value", getEncoderMeters());
     }
 
     public void setMotors(double leftSpeed, double rightSpeed) {
