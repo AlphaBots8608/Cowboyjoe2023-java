@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.hal.SimDevice.Direction;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -23,6 +24,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
 
     double extensionMotorEncoderValue = 0;
     double extensionMotorEncoderVelocity = 0;
+    SlewRateLimiter speedLimiter = new SlewRateLimiter(10);
     private final CANSparkMax extensionMotor = new CANSparkMax(ArmExtensionSparkMaxCanID,MotorType.kBrushless);
     private RelativeEncoder extensionMotor_encoder; 
 
@@ -67,10 +69,10 @@ public class ArmExtensionSubsystem extends SubsystemBase {
 
   }
   public void ExtArmOut() {
-    SetSpeed(.75);
+    SetSpeed(speedLimiter.calculate(.75));
   }
   public void ExtArmIn() {
-    SetSpeed(-.75);
+    SetSpeed(speedLimiter.calculate(-.75));
   }
   public void ExtArmStop() {
     SetSpeed(0);

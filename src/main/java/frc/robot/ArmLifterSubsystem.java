@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 
 public class ArmLifterSubsystem extends SubsystemBase {
 
@@ -20,6 +21,7 @@ public class ArmLifterSubsystem extends SubsystemBase {
 
   double EncoderValue = 0;
   double EncoderVelocity = 0;
+  SlewRateLimiter speedLimiter = new SlewRateLimiter(10);
   private final CANSparkMax lifterMotor = new CANSparkMax(ArmLifterSparkMaxCanID,MotorType.kBrushless);
   private RelativeEncoder lifterMotor_encoder; 
   // private Double DefaultSpeed = 0;
@@ -43,6 +45,9 @@ public class ArmLifterSubsystem extends SubsystemBase {
       // liftermotor.set()
     }
 
+    public void resetEncoder() {
+      lifterMotor_encoder.setPosition(0);
+    }
 
     public void getEncoderData()
   {
@@ -66,10 +71,10 @@ public class ArmLifterSubsystem extends SubsystemBase {
 
   }
   public void LiftArmUp() {
-    SetSpeed(.5);
+    SetSpeed(speedLimiter.calculate(.5));
   }
   public void LiftArmDown() {
-    SetSpeed(-.5);
+    SetSpeed(speedLimiter.calculate(-.5));
   }
   public void StopLiftArm() {
     SetSpeed(0);
