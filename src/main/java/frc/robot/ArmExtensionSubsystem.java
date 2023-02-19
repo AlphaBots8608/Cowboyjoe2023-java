@@ -15,11 +15,11 @@ public class ArmExtensionSubsystem extends SubsystemBase {
 
     int ArmExtensionSparkMaxCanID = 13;
     
-    double CubeSpeed = .25;
-    double ConeSpeed = .75;
+    //double CubeSpeed = .25;
+    //double ConeSpeed = .75;
 
     double minEncoderValue = 0;
-    double maxEncoderValue = 205;
+    double maxEncoderValue = 320;
 
     double extensionMotorEncoderValue = 0;
     double extensionMotorEncoderVelocity = 0;
@@ -66,11 +66,18 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("ArmExtension Encoder Velocity", extensionMotorEncoderVelocity);
 
   }
-  /**
-   * 
-   * feed this a color sensor and speed from an axis of -1 to 1
-   */
-  public void SetSpeed(double thisspeed) {
-    extensionMotor.set(-thisspeed);
+  public void ExtArmOut() {
+    SetSpeed(.75);
   }
+  public void ExtArmIn() {
+    SetSpeed(-.75);
+  }
+  public void ExtArmStop() {
+    SetSpeed(0);
+  }
+
+
+  public void SetSpeed(double thisspeed) {
+    extensionMotor.set(thisspeed);
+  } 
 }

@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 import javax.lang.model.util.ElementScanner14;
 
-
+import edu.wpi.first.cameraserver.CameraServer;
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class. Runs the motors with split
@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     
- 
+    CameraServer.startAutomaticCapture();
 
         /**
     * In order to read encoder values an encoder object is created using the 

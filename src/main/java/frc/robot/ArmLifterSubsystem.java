@@ -14,31 +14,33 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ArmLifterSubsystem extends SubsystemBase {
 
   int ArmLifterSparkMaxCanID = 7;
-  
+
   double minEncoderValue = 0;
-  double maxEncoderValue = 90;
+  double maxEncoderValue = 100;
 
   double EncoderValue = 0;
   double EncoderVelocity = 0;
   private final CANSparkMax lifterMotor = new CANSparkMax(ArmLifterSparkMaxCanID,MotorType.kBrushless);
   private RelativeEncoder lifterMotor_encoder; 
-
+  // private Double DefaultSpeed = 0;
     public ArmLifterSubsystem() {
       lifterMotor_encoder = lifterMotor.getEncoder();
 
       lifterMotor_encoder.setPosition(0);
       lifterMotor.setInverted(true);
       //lassoMotor_encoder.setVelocityConversionFactor(lassoencodercountsperinch);
-      lifterMotor.setSoftLimit(SoftLimitDirection.kForward, (float)maxEncoderValue);
-      lifterMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
       lifterMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
       lifterMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+      lifterMotor.setSoftLimit(SoftLimitDirection.kForward, (float)maxEncoderValue);
+      lifterMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
+      //liftermotor.SetSpeed(DefaultSpeed);
 
     }
 
     @Override
     public void periodic() {
       getEncoderData();
+      // liftermotor.set()
     }
 
 
@@ -63,11 +65,22 @@ public class ArmLifterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("ArmLifter Encoder Velocity", EncoderVelocity);
 
   }
+  public void LiftArmUp() {
+    SetSpeed(.5);
+  }
+  public void LiftArmDown() {
+    SetSpeed(-.5);
+  }
+  public void StopLiftArm() {
+    SetSpeed(0);
+  }
+
+  //}
   /**
    * 
    * feed this a color sensor and speed from an axis of -1 to 1
    */
   public void SetSpeed(double thisspeed) {
-    lifterMotor.set(-thisspeed);
+    lifterMotor.set(thisspeed);
   }
 }

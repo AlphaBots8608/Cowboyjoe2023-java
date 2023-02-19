@@ -7,15 +7,17 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 
+
+
 public class RobotContainer {
     //CONFIG
     int DRIVEJoystickPort = 0;
     int DRIVEforwardReverseAxis = 0;
     int DRIVELeftRightAxis = 1;
-
+    
     //
     
-    
+
     int RatchetLinearActuatorsparkMaxCanID = 15;
     
 
@@ -39,10 +41,11 @@ public class RobotContainer {
                 () -> joystick1.getRawAxis(DRIVELeftRightAxis))//
         );
         // elevatorSubsystem.setDefaultCommand(new ElevatorJoystickCmd(elevatorSubsystem, 0));
-        // intakeSubsystem.setDefaultCommand(new IntakeSetCmd(intakeSubsystem, true));
-        //LassoSubsystem.setDefaultCommand(new LassoJoystickCmd(LassoSubsystem,CSensor,()->joystick1.getRawAxis(3)));
-        //ArmExtensionSubsystem.setDefaultCommand(new ArmExtensionJoystickCmd(ArmExtensionSubsystem,()->joystick1.getRawAxis(3)));
-        ArmLifterSubsystem.setDefaultCommand(new ArmLifterJoystickCmd(ArmLifterSubsystem,()->joystick1.getRawAxis(3)));
+        //intakeSubsystem.setDefaultCommand(new IntakeSetCmd(intakeSubsystem, true));
+        LassoSubsystem.setDefaultCommand(new LassoJoystickCmd(LassoSubsystem,CSensor,()->joystick1.getRawAxis(3)));
+        //ArmExtensionSubsystem.setDefaultCommand(new ArmExtensionJoystickCmd(ArmExtensionSubsystem,()->joystick1.getRawAxis(2)));
+        ArmExtensionSubsystem.setDefaultCommand(new ArmExtStopCMD(ArmExtensionSubsystem));
+        ArmLifterSubsystem.setDefaultCommand(new ArmStopCMD(ArmLifterSubsystem));
     }
 
     private void configureButtonBindings() {
@@ -56,6 +59,15 @@ public class RobotContainer {
         //         .whileActiveOnce(new ElevatorJoystickCmd(elevatorSubsystem, -ElevatorConstants.kJoystickMaxSpeed));
         // new JoystickButton(joystick1, OIConstants.kIntakeCloseButtonIdx)
         //         .whileActiveOnce(new IntakeSetCmd(intakeSubsystem, false));
+        JoystickButton armup = new JoystickButton(joystick1, 8);
+        JoystickButton armdown = new JoystickButton(joystick1, 6);
+        JoystickButton armout = new JoystickButton(joystick1, 7);
+        JoystickButton armin = new JoystickButton(joystick1, 5);
+
+        armup.whileTrue(new ArmUpCMD(ArmLifterSubsystem));
+        armdown.whileTrue(new ArmDownCMD(ArmLifterSubsystem));
+        armout.whileTrue(new ArmOutCMD(ArmExtensionSubsystem));
+        armin.whileTrue(new ArmInCMD(ArmExtensionSubsystem));
     }
 
     public Command getAutonomousCommand() {

@@ -6,13 +6,14 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-
+import edu.wpi.first.math.filter.SlewRateLimiter;
 
 public class ArcadeDriveCmd extends CommandBase {
 
     private final DriveSubsystem driveSubsystem;
     private final Supplier<Double> speedFunction, turnFunction;
-
+    SlewRateLimiter speedLimiter = new SlewRateLimiter(10);
+    SlewRateLimiter turnLimiter = new SlewRateLimiter(10);
     public ArcadeDriveCmd(DriveSubsystem driveSubsystem, //
             Supplier<Double> speedFunction, Supplier<Double> turnFunction) {
         this.speedFunction = speedFunction;
@@ -28,8 +29,8 @@ public class ArcadeDriveCmd extends CommandBase {
 
     @Override
     public void execute() {
-        double realTimeSpeed = speedFunction.get();
-        double realTimeTurn = turnFunction.get();
+        double realTimeSpeed = speedLimiter.calculate(speedFunction.get());
+        double realTimeTurn = turnLimiter.calculate(turnFunction.get());
 
         //double left = realTimeSpeed + realTimeTurn;
         //double right = realTimeSpeed - realTimeTurn;

@@ -26,7 +26,9 @@ public class LassoSubsystem extends SubsystemBase {
     //double Currentlassolength = 0; // this is the current length of the lasso in inches that is 'out' from the motor. 0 is retracted to tightest position (slight slack)
     
     double minEncoderValue = 0;
+    double minEncoderValueWithCube = 96;
     double maxEncoderValue = 180;
+    
 
     double lassoEncoderValue = 0;
     double lassoEncoderVelocity = 0;
@@ -39,10 +41,11 @@ public class LassoSubsystem extends SubsystemBase {
         lassoMotor_encoder.setPosition(0);
         lassoMotor.setInverted(true);
         //lassoMotor_encoder.setVelocityConversionFactor(lassoencodercountsperinch);
-        lassoMotor.setSoftLimit(SoftLimitDirection.kForward, (float)maxEncoderValue);
-        lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
         lassoMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
         lassoMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        lassoMotor.setSoftLimit(SoftLimitDirection.kForward, (float)maxEncoderValue);
+        lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
+        
 
     }
 
@@ -87,6 +90,9 @@ public class LassoSubsystem extends SubsystemBase {
     if (thisSensor.lastdetectedColor == "Cube")
     {
       lassospeed = thisspeed/2;
+      // if we are pulling in a cube, then we can only retract the lasso to a certain point
+      lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValueWithCube);
+
     }
     else if (thisSensor.lastdetectedColor == "Cone")
     {
@@ -95,6 +101,8 @@ public class LassoSubsystem extends SubsystemBase {
     else 
     {
       lassospeed = thisspeed;
+      // if we are not pulling in a cube or Cone, then we can retract the lasso all the way
+      lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
     }
     lassoMotor.set(lassospeed);
   }

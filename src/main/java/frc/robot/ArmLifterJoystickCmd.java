@@ -19,7 +19,6 @@ public class ArmLifterJoystickCmd extends CommandBase {
         this.ArmLifterSubsystem = ArmLifterSubsystem;
         addRequirements(ArmLifterSubsystem);
     }
-
     @Override
     public void initialize() {
         //System.out.println("LassoJoystickCmd started!");
@@ -27,7 +26,7 @@ public class ArmLifterJoystickCmd extends CommandBase {
 
     @Override
     public void execute() {
-        ArmLifterSubsystem.SetSpeed(speedFunction.get());
+        //ArmLifterSubsystem.SetSpeed(speedFunction.get());
     }
 
     @Override
