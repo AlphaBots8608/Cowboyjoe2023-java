@@ -46,7 +46,9 @@ public class ArmLifterSubsystem extends SubsystemBase {
     public void resetEncoder() {
       lifterMotor_encoder.setPosition(0);
     }
-
+    public double getEncoderValue() {
+      return lifterMotor_encoder.getPosition();
+    }
     public void getEncoderData()
   {
     /**
@@ -67,6 +69,13 @@ public class ArmLifterSubsystem extends SubsystemBase {
     EncoderVelocity = lifterMotor_encoder.getVelocity();
     SmartDashboard.putNumber("ArmLifter Encoder Velocity", EncoderVelocity);
 
+  }
+  public void LiftArmUp(double input) {
+
+    SetSpeed(speedLimiter.calculate(input));
+  }
+  public void LiftArmDown(double input) {
+    SetSpeed(speedLimiter.calculate(input));
   }
   public void LiftArmUp() {
 

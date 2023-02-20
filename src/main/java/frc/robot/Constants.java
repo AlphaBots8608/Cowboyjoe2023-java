@@ -19,8 +19,8 @@ public final class Constants {
     public static final int kDRIVELeftRightAxis = 1;
     public static final int klassoMotorAxis = 3;
 
-    public static final int kArmupButton = 8;
-    public static final int kArmdownButton = 6;
+    public static final int kArmupButton = 6;
+    public static final int kArmdownButton = 8;
     public static final int kArmoutButton = 7;
     public static final int kArminButton = 5; 
 
