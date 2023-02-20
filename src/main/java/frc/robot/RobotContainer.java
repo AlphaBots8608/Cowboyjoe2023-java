@@ -1,9 +1,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.ArcadeDriveCmd;
 import frc.robot.Commands.ArmDownCMD;
@@ -24,16 +27,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 
 public class RobotContainer {
-    //CONFIG
-    int DRIVEJoystickPort = 0;
-    int DRIVEforwardReverseAxis = 0;
-    int DRIVELeftRightAxis = 1;
-    
-    //
-    
-
-    int RatchetLinearActuatorsparkMaxCanID = 15;
-    
 
     public JoeColorSensor CSensor= new JoeColorSensor();
     public JoePowerDistributionPanel PDP= new JoePowerDistributionPanel();
@@ -45,18 +38,19 @@ public class RobotContainer {
     public ArmExtensionSubsystem ArmExtensionSubsystem = new ArmExtensionSubsystem();
     public ArmLifterSubsystem ArmLifterSubsystem = new ArmLifterSubsystem();
 
-    public final Joystick joystick1 = new Joystick(DRIVEJoystickPort);
-
+    public final Joystick joystick1 = new Joystick(Constants.OperatorConstants.kDRIVEJoystickPort);
+    public final XboxController DriveController = new XboxController(Constants.OperatorConstants.kDRIVEJoystickPort);
+    
     public RobotContainer() {
         configureButtonBindings();
-
         driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, //
-                () -> joystick1.getRawAxis(DRIVEforwardReverseAxis),
-                () -> joystick1.getRawAxis(DRIVELeftRightAxis))//
+                () -> joystick1.getRawAxis(Constants.OperatorConstants.kDRIVEforwardReverseAxis),
+                () -> joystick1.getRawAxis(Constants.OperatorConstants.kDRIVELeftRightAxis))//
         );
         // elevatorSubsystem.setDefaultCommand(new ElevatorJoystickCmd(elevatorSubsystem, 0));
         //intakeSubsystem.setDefaultCommand(new IntakeSetCmd(intakeSubsystem, true));
-        LassoSubsystem.setDefaultCommand(new LassoJoystickCmd(LassoSubsystem,CSensor,()->joystick1.getRawAxis(3)));
+        
+        LassoSubsystem.setDefaultCommand(new LassoJoystickCmd(LassoSubsystem,CSensor,()->joystick1.getRawAxis(Constants.OperatorConstants.klassoMotorAxis)));
         //ArmExtensionSubsystem.setDefaultCommand(new ArmExtensionJoystickCmd(ArmExtensionSubsystem,()->joystick1.getRawAxis(2)));
         ArmExtensionSubsystem.setDefaultCommand(new ArmExtStopCMD(ArmExtensionSubsystem));
         ArmLifterSubsystem.setDefaultCommand(new ArmStopCMD(ArmLifterSubsystem));
@@ -73,17 +67,19 @@ public class RobotContainer {
         //         .whileActiveOnce(new ElevatorJoystickCmd(elevatorSubsystem, -ElevatorConstants.kJoystickMaxSpeed));
         // new JoystickButton(joystick1, OIConstants.kIntakeCloseButtonIdx)
         //         .whileActiveOnce(new IntakeSetCmd(intakeSubsystem, false));
-        JoystickButton armup = new JoystickButton(joystick1, 8);
-        JoystickButton armdown = new JoystickButton(joystick1, 6);
-        JoystickButton armout = new JoystickButton(joystick1, 7);
-        JoystickButton armin = new JoystickButton(joystick1, 5);
+
+        JoystickButton armup = new JoystickButton(joystick1, Constants.OperatorConstants.kArmupButton);
+        JoystickButton armdown = new JoystickButton(joystick1, Constants.OperatorConstants.kArmdownButton);
+        JoystickButton armout = new JoystickButton(joystick1, Constants.OperatorConstants.kArmoutButton);
+        JoystickButton armin = new JoystickButton(joystick1, Constants.OperatorConstants.kArminButton);
 
         armup.whileTrue(new ArmUpCMD(ArmLifterSubsystem));
         armdown.whileTrue(new ArmDownCMD(ArmLifterSubsystem));
         armout.whileTrue(new ArmOutCMD(ArmExtensionSubsystem));
         armin.whileTrue(new ArmInCMD(ArmExtensionSubsystem));
 
-        new JoystickButton(joystick1, 9).onTrue(new InstantCommand(ArmLifterSubsystem::resetEncoder));
+        new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new StartEndCommand(LassoSubsystem::slowWindInBeyondSoftLimit, LassoSubsystem::resetEncoder,LassoSubsystem));
+        //new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new RunCommand(LassoSubsystem::resetEncoder,LassoSubsystem));
     }
 
     public Command getAutonomousCommand() {

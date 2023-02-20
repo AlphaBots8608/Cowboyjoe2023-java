@@ -2,6 +2,7 @@ package frc.robot.Subsystems;
 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -15,26 +16,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LassoSubsystem extends SubsystemBase {
 
-    int lassoMotorCanID = 16;
+   
     
-    double CubeSpeed = .25;
-    double ConeSpeed = .75;
-
-    //
-    //double lassoinchesperrev = 1.5;
-    //double lassoencodercountsperrev = 42;
-    //double lassoencodercountsperinch = lassoencodercountsperrev/lassoinchesperrev;
-
-    //double Currentlassolength = 0; // this is the current length of the lasso in inches that is 'out' from the motor. 0 is retracted to tightest position (slight slack)
+  //double Currentlassolength = 0; // this is the current length of the lasso in inches that is 'out' from the motor. 0 is retracted to tightest position (slight slack)
     
-    double minEncoderValue = 0;
-    double minEncoderValueWithCube = 96;
-    double maxEncoderValue = 180;
-    
-
     double lassoEncoderValue = 0;
     double lassoEncoderVelocity = 0;
-    private final CANSparkMax lassoMotor = new CANSparkMax(lassoMotorCanID,MotorType.kBrushless);
+    private final CANSparkMax lassoMotor = new CANSparkMax(Constants.LassoConstants.klassoMotorCanID,MotorType.kBrushless);
     private RelativeEncoder lassoMotor_encoder; 
 
     public LassoSubsystem() {
@@ -45,17 +33,24 @@ public class LassoSubsystem extends SubsystemBase {
         //lassoMotor_encoder.setVelocityConversionFactor(lassoencodercountsperinch);
         lassoMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
         lassoMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-        lassoMotor.setSoftLimit(SoftLimitDirection.kForward, (float)maxEncoderValue);
-        lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
+        lassoMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.LassoConstants.kmaxEncoderValue);
+        lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.LassoConstants.kminEncoderValue);
         lassoMotor.setIdleMode(IdleMode.kBrake);
-
+        lassoMotor.setClosedLoopRampRate(.25);
     }
 
     @Override
     public void periodic() {
       getEncoderData();
     }
-
+    public void slowWindInBeyondSoftLimit() {
+      double slowretractspeed = -.2;
+      lassoMotor_encoder.setPosition(Constants.LassoConstants.kmaxEncoderValue);
+      lassoMotor.set(slowretractspeed);
+    }
+    public void resetEncoder() {
+      lassoMotor_encoder.setPosition(0);
+    }
 
     public void getEncoderData()
   {
@@ -93,7 +88,7 @@ public class LassoSubsystem extends SubsystemBase {
     {
       lassospeed = thisspeed/2;
       // if we are pulling in a cube, then we can only retract the lasso to a certain point
-      lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValueWithCube);
+      lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.LassoConstants.kminEncoderValueWithCube);
 
     }
     else if (thisSensor.lastdetectedColor == "Cone")
@@ -104,7 +99,7 @@ public class LassoSubsystem extends SubsystemBase {
     {
       lassospeed = thisspeed;
       // if we are not pulling in a cube or Cone, then we can retract the lasso all the way
-      lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
+      lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.LassoConstants.kminEncoderValue);
     }
     lassoMotor.set(lassospeed);
   }

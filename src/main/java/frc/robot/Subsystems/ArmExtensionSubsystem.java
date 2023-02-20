@@ -2,6 +2,8 @@ package frc.robot.Subsystems;
 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMax;
@@ -14,18 +16,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmExtensionSubsystem extends SubsystemBase {
 
-    int ArmExtensionSparkMaxCanID = 13;
     
-    //double CubeSpeed = .25;
-    //double ConeSpeed = .75;
-
-    double minEncoderValue = 0;
-    double maxEncoderValue = 320;
 
     double extensionMotorEncoderValue = 0;
     double extensionMotorEncoderVelocity = 0;
-    SlewRateLimiter speedLimiter = new SlewRateLimiter(10);
-    private final CANSparkMax extensionMotor = new CANSparkMax(ArmExtensionSparkMaxCanID,MotorType.kBrushless);
+    
+    SlewRateLimiter speedLimiter = new SlewRateLimiter(Constants.ArmExtensionConstants.kArmExtensionSlewRate);
+    private final CANSparkMax extensionMotor = new CANSparkMax(Constants.ArmExtensionConstants.kArmExtensionSparkMaxCanID,MotorType.kBrushless);
     private RelativeEncoder extensionMotor_encoder; 
 
     public ArmExtensionSubsystem() {
@@ -34,8 +31,8 @@ public class ArmExtensionSubsystem extends SubsystemBase {
       extensionMotor_encoder.setPosition(0);
       extensionMotor.setInverted(false);
       //lassoMotor_encoder.setVelocityConversionFactor(lassoencodercountsperinch);
-      extensionMotor.setSoftLimit(SoftLimitDirection.kForward, (float)maxEncoderValue);
-      extensionMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
+      extensionMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.ArmExtensionConstants.kmaxEncoderValue);
+      extensionMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.ArmExtensionConstants.kminEncoderValue);
       extensionMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
       extensionMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
@@ -69,10 +66,10 @@ public class ArmExtensionSubsystem extends SubsystemBase {
 
   }
   public void ExtArmOut() {
-    SetSpeed(speedLimiter.calculate(.75));
+    SetSpeed(speedLimiter.calculate(Constants.ArmExtensionConstants.kArmOutSpeed));
   }
   public void ExtArmIn() {
-    SetSpeed(speedLimiter.calculate(-.75));
+    SetSpeed(speedLimiter.calculate(Constants.ArmExtensionConstants.kArmInSpeed));
   }
   public void ExtArmStop() {
     SetSpeed(0);

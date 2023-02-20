@@ -2,6 +2,8 @@ package frc.robot.Subsystems;
 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMax;
@@ -14,15 +16,11 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 
 public class ArmLifterSubsystem extends SubsystemBase {
 
-  int ArmLifterSparkMaxCanID = 7;
-
-  double minEncoderValue = 0;
-  double maxEncoderValue = 100;
-
   double EncoderValue = 0;
   double EncoderVelocity = 0;
-  SlewRateLimiter speedLimiter = new SlewRateLimiter(10);
-  private final CANSparkMax lifterMotor = new CANSparkMax(ArmLifterSparkMaxCanID,MotorType.kBrushless);
+  
+  SlewRateLimiter speedLimiter = new SlewRateLimiter(Constants.ArmLifterConstants.kslewrate);
+  private final CANSparkMax lifterMotor = new CANSparkMax(Constants.ArmLifterConstants.kArmLifterSparkMaxCanID,MotorType.kBrushless);
   private RelativeEncoder lifterMotor_encoder; 
   // private Double DefaultSpeed = 0;
     public ArmLifterSubsystem() {
@@ -33,8 +31,8 @@ public class ArmLifterSubsystem extends SubsystemBase {
       //lassoMotor_encoder.setVelocityConversionFactor(lassoencodercountsperinch);
       lifterMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
       lifterMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-      lifterMotor.setSoftLimit(SoftLimitDirection.kForward, (float)maxEncoderValue);
-      lifterMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)minEncoderValue);
+      lifterMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.ArmLifterConstants.kmaxEncoderValue);
+      lifterMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.ArmLifterConstants.kminEncoderValue);
       //liftermotor.SetSpeed(DefaultSpeed);
 
     }
@@ -71,10 +69,11 @@ public class ArmLifterSubsystem extends SubsystemBase {
 
   }
   public void LiftArmUp() {
-    SetSpeed(speedLimiter.calculate(.5));
+
+    SetSpeed(speedLimiter.calculate(Constants.ArmLifterConstants.kArmLifterUpSpeed));
   }
   public void LiftArmDown() {
-    SetSpeed(speedLimiter.calculate(-.5));
+    SetSpeed(speedLimiter.calculate(Constants.ArmLifterConstants.kArmLifterDownSpeed));
   }
   public void StopLiftArm() {
     SetSpeed(0);
