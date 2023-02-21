@@ -43,6 +43,12 @@ public class ArmLifterSubsystem extends SubsystemBase {
       // liftermotor.set()
     }
 
+    public void slowWindInBeyondSoftLimit() {
+      double slowretractspeed = -.2;
+      lifterMotor_encoder.setPosition(Constants.ArmLifterConstants.kmaxEncoderValue);//we could disable soft limit here but this is "safer" because you ALWAYS call reset encoder after.
+      SetSpeed(slowretractspeed);
+    }
+
     public void resetEncoder() {
       lifterMotor_encoder.setPosition(0);
     }
@@ -71,11 +77,12 @@ public class ArmLifterSubsystem extends SubsystemBase {
 
   }
   public void LiftArmUp(double input) {
-
+    SmartDashboard.putNumber("ArmLift PID output",input);
     SetSpeed(speedLimiter.calculate(input));
   }
   public void LiftArmDown(double input) {
     SetSpeed(speedLimiter.calculate(input));
+    SmartDashboard.putNumber("ArmLift PID output",input);
   }
   public void LiftArmUp() {
 

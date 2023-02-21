@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Commands.ArcadeDriveCmd;
 import frc.robot.Commands.ArmDownCMD;
 import frc.robot.Commands.ArmExtStopCMD;
@@ -22,7 +23,8 @@ import frc.robot.Subsystems.ArmLifterSubsystem;
 import frc.robot.Subsystems.DriveSubsystem;
 import frc.robot.Subsystems.JoeColorSensor;
 import frc.robot.Subsystems.JoePowerDistributionPanel;
-import frc.robot.Subsystems.LassoSubsystem;
+import frc.robot.Subsystems.Limelight3Subsystem;
+import frc.robot.Subsystems.PIDLassoSubsystem;
 import frc.robot.Subsystems.PIDArmExtensionSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
@@ -33,11 +35,11 @@ public class RobotContainer {
     
     public JoeColorSensor CSensor= new JoeColorSensor();
     public JoePowerDistributionPanel PDP= new JoePowerDistributionPanel();
-
+    Limelight3Subsystem limelight3Subsystem = new Limelight3Subsystem();
     private final DriveSubsystem driveSubsystem = new DriveSubsystem();
     // private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     // private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    public LassoSubsystem LassoSubsystem = new LassoSubsystem();
+    public PIDLassoSubsystem PIDLassoSubsystem = new PIDLassoSubsystem();
     //public ArmExtensionSubsystem ArmExtensionSubsystem = new ArmExtensionSubsystem();
     public PIDArmExtensionSubsystem PIDArmExtensionSubsystem = new PIDArmExtensionSubsystem();
     public ArmLifterSubsystem ArmLifterSubsystem = new ArmLifterSubsystem();
@@ -54,7 +56,7 @@ public class RobotContainer {
         // elevatorSubsystem.setDefaultCommand(new ElevatorJoystickCmd(elevatorSubsystem, 0));
         //intakeSubsystem.setDefaultCommand(new IntakeSetCmd(intakeSubsystem, true));
         
-        LassoSubsystem.setDefaultCommand(new LassoJoystickCmd(LassoSubsystem,CSensor,()->joystick1.getRawAxis(Constants.OperatorConstants.klassoMotorAxis)));
+        PIDLassoSubsystem.setDefaultCommand(new LassoJoystickCmd(PIDLassoSubsystem,CSensor,()->joystick1.getRawAxis(Constants.OperatorConstants.klassoMotorAxis)));
         //ArmExtensionSubsystem.setDefaultCommand(new ArmExtensionJoystickCmd(ArmExtensionSubsystem,()->joystick1.getRawAxis(2)));
         //ArmExtensionSubsystem.setDefaultCommand(new ArmExtStopCMD(ArmExtensionSubsystem));
         ArmLifterSubsystem.setDefaultCommand(new ArmStopCMD(ArmLifterSubsystem));
@@ -68,9 +70,9 @@ public class RobotContainer {
         //JoystickButton armin = new JoystickButton(joystick1, Constants.OperatorConstants.kArminButton);
 
 
-        double kStabilizationP = 0.05;
-        double kStabilizationI = 0;
-        double kStabilizationD = 0;
+        double kStabilizationP = 0.025;
+        double kStabilizationI = 0.0001;
+        double kStabilizationD = 0.00;
         armup
         .whileTrue(
             new PIDCommand(
@@ -127,8 +129,8 @@ public class RobotContainer {
         //armout.whileTrue(new StartEndCommand(ArmExtensionSubsystem::ExtArmOut, ArmExtensionSubsystem::ExtArmStop, ArmExtensionSubsystem));
         int kArmOutHighestPoleButton = 4;//this is the Y button, the triangle button or the Top button of the xbox controller
         int kArmOutMidestPoleButton = 3;//this is the B button, the Square button or the Right button of the xbox controller
-        int kArmOutLowestPoleButton = 1;
-        int kArmin = 2;
+        int kArmOutLowestPoleButton = 1; // X button, Left button of the xbox controller
+        int kArmin = 2;// A button, bottom of 4 buttons
         JoystickButton armHighestout = new JoystickButton(joystick1, kArmOutHighestPoleButton);
         JoystickButton armMidestOut = new JoystickButton(joystick1, kArmOutMidestPoleButton);
         JoystickButton armLowestOut = new JoystickButton(joystick1, kArmOutLowestPoleButton);
@@ -138,10 +140,21 @@ public class RobotContainer {
         armLowestOut.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointLowScore,PIDArmExtensionSubsystem));
         armIn.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointIn,PIDArmExtensionSubsystem));
         
-        PIDArmExtensionSubsystem.enable();
         //new JoystickButton(joystick1, 10).whileTrue(new InstantCommand(PIDArmExtensionSubsystem::enable,PIDArmExtensionSubsystem));
+        int kHomeLifterPOVDirection = 0;//0 is up, 180 is down
+        int kHomeExtensionPOVDirection = 180;//0 is up, 180 is down
+        int kHomeLassoPOVDirection = 90;//0 is up, 180 is down
+        
+        POVButton HomeLifterPOV = new POVButton(joystick1, kHomeLifterPOVDirection);
+        POVButton HomeExtensionPOV = new POVButton(joystick1, kHomeExtensionPOVDirection);
+        POVButton HomeLassoPOV = new POVButton(joystick1, kHomeLassoPOVDirection);
 
-        new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new StartEndCommand(LassoSubsystem::slowWindInBeyondSoftLimit, LassoSubsystem::resetEncoder,LassoSubsystem));
+        HomeLifterPOV.whileTrue(new StartEndCommand(ArmLifterSubsystem::slowWindInBeyondSoftLimit, ArmLifterSubsystem::resetEncoder,ArmLifterSubsystem));
+        HomeExtensionPOV.whileTrue(new StartEndCommand(PIDArmExtensionSubsystem::slowWindInBeyondSoftLimit, PIDArmExtensionSubsystem::resetEncoder,PIDArmExtensionSubsystem));
+        HomeLassoPOV.whileTrue(new StartEndCommand(PIDLassoSubsystem::slowWindInBeyondSoftLimit, PIDLassoSubsystem::resetEncoder,PIDLassoSubsystem));
+
+
+        //new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new StartEndCommand(LassoSubsystem::slowWindInBeyondSoftLimit, LassoSubsystem::resetEncoder,LassoSubsystem));
         //new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new RunCommand(LassoSubsystem::resetEncoder,LassoSubsystem));
     }
 

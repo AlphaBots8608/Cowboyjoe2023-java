@@ -79,7 +79,10 @@ public final class Constants {
    
     public static final double kminEncoderValue = 0;
     public static final double kminEncoderValueWithCube = 96;
+    public static final double kEncoderValueLoopOut= 150;
     public static final double kmaxEncoderValue = 180;
+
+    public static final double kminEncoderValueWithCone = 4;
 
   
   }

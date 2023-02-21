@@ -45,7 +45,7 @@ public class LassoSubsystem extends SubsystemBase {
     }
     public void slowWindInBeyondSoftLimit() {
       double slowretractspeed = -.2;
-      lassoMotor_encoder.setPosition(Constants.LassoConstants.kmaxEncoderValue);
+      lassoMotor_encoder.setPosition(Constants.LassoConstants.kmaxEncoderValue);//we could disable soft limit here but this is "safer" because you ALWAYS call reset encoder after.
       lassoMotor.set(slowretractspeed);
     }
     public void resetEncoder() {

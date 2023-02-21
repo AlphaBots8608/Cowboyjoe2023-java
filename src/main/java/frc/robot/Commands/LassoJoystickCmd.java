@@ -6,22 +6,22 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems.JoeColorSensor;
-import frc.robot.Subsystems.LassoSubsystem;
+import frc.robot.Subsystems.PIDLassoSubsystem;
 
 
 
 public class LassoJoystickCmd extends CommandBase {
 
-    private final LassoSubsystem lassoSubsystem;
+    private final PIDLassoSubsystem PIDLassoSubsystem;
     private final JoeColorSensor Colorsensor;
     private final Supplier<Double> speedFunction;
 
-    public LassoJoystickCmd(LassoSubsystem lassoSubsystem, 
+    public LassoJoystickCmd(PIDLassoSubsystem PIDLassoSubsystem, 
             JoeColorSensor Colorsensor, Supplier<Double> speedFunction) {
         this.Colorsensor = Colorsensor;
         this.speedFunction = speedFunction;
-        this.lassoSubsystem = lassoSubsystem;
-        addRequirements(lassoSubsystem);
+        this.PIDLassoSubsystem = PIDLassoSubsystem;
+        addRequirements(PIDLassoSubsystem);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class LassoJoystickCmd extends CommandBase {
 
     @Override
     public void execute() {
-        lassoSubsystem.SetlassoSpeed(Colorsensor,speedFunction.get());
+        PIDLassoSubsystem.SetlassoSpeed(Colorsensor,speedFunction.get());
     }
 
     @Override

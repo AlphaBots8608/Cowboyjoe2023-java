@@ -41,7 +41,7 @@ public class PIDArmExtensionSubsystem extends PIDSubsystem {
       extensionMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.ArmExtensionConstants.kminEncoderValue);
       extensionMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
       extensionMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-
+      enable();//enable the pidcontroller of this subsystem
     }
 
   @Override
@@ -62,7 +62,7 @@ public class PIDArmExtensionSubsystem extends PIDSubsystem {
     @Override
     public void periodic() {
       getEncoderData();
-      super.periodic();
+      super.periodic();// This is a PidSubsystem, we have orridden the periodic method to get encoder data... So we need to call the super periodic method to get the PID stuff to work.
     }
 
 
@@ -78,6 +78,17 @@ public class PIDArmExtensionSubsystem extends PIDSubsystem {
   public void setSetpointIn() {
     setSetpoint(0);
   }
+
+  public void slowWindInBeyondSoftLimit() {
+    setSetpointIn();//might as well set the setpoint to 0 to it doesnt appear to run away after finding 0.
+    double slowretractspeed = -.2;
+    extensionMotor_encoder.setPosition(Constants.ArmExtensionConstants.kmaxEncoderValue);//we could disable soft limit here but this is "safer" because you ALWAYS call reset encoder after.
+    SetSpeed(slowretractspeed);
+  }
+  public void resetEncoder() {
+    extensionMotor_encoder.setPosition(0);
+  }
+
     public void getEncoderData()
   {
     /**
