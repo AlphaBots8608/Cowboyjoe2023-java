@@ -35,7 +35,7 @@ public class RobotContainer {
     
     public JoeColorSensor CSensor= new JoeColorSensor();
     public JoePowerDistributionPanel PDP= new JoePowerDistributionPanel();
-    Limelight3Subsystem limelight3Subsystem = new Limelight3Subsystem();
+    public Limelight3Subsystem limelight3Subsystem = new Limelight3Subsystem();
     private final DriveSubsystem driveSubsystem = new DriveSubsystem();
     // private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     // private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
@@ -69,41 +69,45 @@ public class RobotContainer {
         //JoystickButton armout = new JoystickButton(joystick1, Constants.OperatorConstants.kArmoutButton);
         //JoystickButton armin = new JoystickButton(joystick1, Constants.OperatorConstants.kArminButton);
 
+        armup.whileTrue(new ArmDownCMD(ArmLifterSubsystem));
+        armdown.whileTrue(new ArmUpCMD(ArmLifterSubsystem));
 
-        double kStabilizationP = 0.025;
-        double kStabilizationI = 0.0001;
-        double kStabilizationD = 0.00;
-        armup
-        .whileTrue(
-            new PIDCommand(
-                new PIDController(
-                    kStabilizationP,
-                    kStabilizationI,
-                    kStabilizationD),
-                // Close the loop on the turn rate
-                ArmLifterSubsystem::getEncoderValue,
-                // Setpoint is 0
-                0,
-                // Pipe the output to the turning controls
-                output -> ArmLifterSubsystem.LiftArmUp(output),
-                // Require the robot drive
-                ArmLifterSubsystem));
+        // double kStabilizationP = 0.025;
+        // double kStabilizationI = 0.0001;
+        // double kStabilizationD = 0.00;
+        // armup
+        // .whileTrue(
+        //     new PIDCommand(
+        //         new PIDController(
+        //             kStabilizationP,
+        //             kStabilizationI,
+        //             kStabilizationD),
+        //         // Close the loop on the turn rate
+        //         ArmLifterSubsystem::getEncoderValue,
+        //         // Setpoint is 0
+        //         0,
+        //         // Pipe the output to the turning controls
+        //         output -> ArmLifterSubsystem.LiftArmUp(output),
+        //         // Require the robot drive
+        //         ArmLifterSubsystem));
         
-        armdown
-        .whileTrue(
-            new PIDCommand(
-                new PIDController(
-                    kStabilizationP,
-                    kStabilizationI,
-                    kStabilizationD),
-                // Close the loop on the turn rate
-                ArmLifterSubsystem::getEncoderValue,
-                // Setpoint is 0
-                60,
-                // Pipe the output to the turning controls
-                output -> ArmLifterSubsystem.LiftArmDown(output),
-                // Require the robot drive
-                ArmLifterSubsystem));
+        // armdown
+        // .whileTrue(
+        //     new PIDCommand(
+        //         new PIDController(
+        //             kStabilizationP,
+        //             kStabilizationI,
+        //             kStabilizationD),
+        //         // Close the loop on the turn rate
+        //         ArmLifterSubsystem::getEncoderValue,
+        //         // Setpoint is 0
+        //         60,
+        //         // Pipe the output to the turning controls
+        //         output -> ArmLifterSubsystem.LiftArmDown(output),
+        //         // Require the robot drive
+        //         ArmLifterSubsystem));
+        //////////////////////////////////
+
         // new JoystickButton(joystick1, OIConstants.kElevatorPIDRaiseButtonIdx)
         //         .whileActiveOnce(new ElevatorPIDCmd(elevatorSubsystem, ElevatorConstants.kRaisedPosition));
         // new JoystickButton(joystick1, OIConstants.kElevatorPIDLowerButtonIdx)
@@ -117,8 +121,7 @@ public class RobotContainer {
 
         
 
-        //armup.whileTrue(new ArmUpCMD(ArmLifterSubsystem));
-        //armdown.whileTrue(new ArmDownCMD(ArmLifterSubsystem));
+        
         //armout.whileTrue(new ArmOutCMD(ArmExtensionSubsystem));
         //armin.whileTrue(new ArmInCMD(ArmExtensionSubsystem));
         

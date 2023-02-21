@@ -141,17 +141,21 @@ public class PIDLassoSubsystem extends PIDSubsystem {
       //lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.LassoConstants.kminEncoderValueWithCube);
 
     }
-    else if (thisspeed < -0.2 &&thisSensor.lastdetectedColor == "Cone")
+    else if (thisspeed < -0.2 )
     {
       setSetpointLassoCone();
       //lassospeed = thisspeed;
     }
     else 
     {
-      //lassospeed = thisspeed;
-      
-      // if we are not pulling in a cube or Cone, then we can retract the lasso all the way
-      //lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.LassoConstants.kminEncoderValue);
+      // if(Math.abs(thisspeed) > .5)//if outside of the deadband range .2 to -.2
+      // {
+      //   // if we are not pulling in a cube or Cone, then we can retract the lasso all the way
+      //   lassospeed = thisspeed;
+      //   SetSpeed(lassospeed);
+      //   setSetpoint(lassoMotor_encoder.getPosition());
+      // }
+
     }
     //SetSpeed(lassospeed);
   }
