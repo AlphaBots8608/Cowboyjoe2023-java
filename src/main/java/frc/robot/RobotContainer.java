@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -10,10 +11,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.ArcadeDriveCmd;
 import frc.robot.Commands.ArmDownCMD;
 import frc.robot.Commands.ArmExtStopCMD;
 import frc.robot.Commands.ArmInCMD;
+import frc.robot.Commands.ArmLifterJoystickCmd;
 import frc.robot.Commands.ArmOutCMD;
 import frc.robot.Commands.ArmStopCMD;
 import frc.robot.Commands.ArmUpCMD;
@@ -26,51 +29,61 @@ import frc.robot.Subsystems.JoePowerDistributionPanel;
 import frc.robot.Subsystems.Limelight3Subsystem;
 import frc.robot.Subsystems.PIDLassoSubsystem;
 import frc.robot.Subsystems.PIDArmExtensionSubsystem;
+import frc.robot.Subsystems.PIDArmLifterSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 
 
 
 public class RobotContainer {
-    
-    public JoeColorSensor CSensor= new JoeColorSensor();
     public JoePowerDistributionPanel PDP= new JoePowerDistributionPanel();
-    public Limelight3Subsystem limelight3Subsystem = new Limelight3Subsystem();
+    public final XboxController driveController = new XboxController(Constants.OperatorConstants.kDRIVEJoystickPort);
+    
+
     private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+    public JoeColorSensor CSensor= new JoeColorSensor();
+    public Limelight3Subsystem limelight3Subsystem = new Limelight3Subsystem(driveController);
     // private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     // private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     public PIDLassoSubsystem PIDLassoSubsystem = new PIDLassoSubsystem();
     //public ArmExtensionSubsystem ArmExtensionSubsystem = new ArmExtensionSubsystem();
     public PIDArmExtensionSubsystem PIDArmExtensionSubsystem = new PIDArmExtensionSubsystem();
-    public ArmLifterSubsystem ArmLifterSubsystem = new ArmLifterSubsystem();
-
-    public final Joystick joystick1 = new Joystick(Constants.OperatorConstants.kDRIVEJoystickPort);
-    public final XboxController DriveController = new XboxController(Constants.OperatorConstants.kDRIVEJoystickPort);
+    //public ArmLifterSubsystem ArmLifterSubsystem = new ArmLifterSubsystem();
+    public PIDArmLifterSubsystem PIDArmLifterSubsystem = new PIDArmLifterSubsystem();
+    //public final Joystick driveController = new Joystick(Constants.OperatorConstants.kDRIVEJoystickPort);
     
     public RobotContainer() {
         configureButtonBindings();
         driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, //
-                () -> joystick1.getRawAxis(Constants.OperatorConstants.kDRIVEforwardReverseAxis),
-                () -> joystick1.getRawAxis(Constants.OperatorConstants.kDRIVELeftRightAxis))//
+                () -> driveController.getRawAxis(Constants.OperatorConstants.kDRIVEforwardReverseAxis),
+                () -> driveController.getRawAxis(Constants.OperatorConstants.kDRIVELeftRightAxis))//
         );
         // elevatorSubsystem.setDefaultCommand(new ElevatorJoystickCmd(elevatorSubsystem, 0));
         //intakeSubsystem.setDefaultCommand(new IntakeSetCmd(intakeSubsystem, true));
         
-        PIDLassoSubsystem.setDefaultCommand(new LassoJoystickCmd(PIDLassoSubsystem,CSensor,()->joystick1.getRawAxis(Constants.OperatorConstants.klassoMotorAxis)));
+        PIDLassoSubsystem.setDefaultCommand(new LassoJoystickCmd(PIDLassoSubsystem,CSensor,()->driveController.getRawAxis(Constants.OperatorConstants.klassoMotorAxis)));
         //ArmExtensionSubsystem.setDefaultCommand(new ArmExtensionJoystickCmd(ArmExtensionSubsystem,()->joystick1.getRawAxis(2)));
         //ArmExtensionSubsystem.setDefaultCommand(new ArmExtStopCMD(ArmExtensionSubsystem));
-        ArmLifterSubsystem.setDefaultCommand(new ArmStopCMD(ArmLifterSubsystem));
+        //PIDArmLifterSubsystem.setDefaultCommand(new ArmLifterJoystickCmd(PIDArmLifterSubsystem, () -> driveController.getRawAxis(Constants.OperatorConstants.kDRIVERightTriggerAxis)));
     }
 
     private void configureButtonBindings() {
 
-        JoystickButton armup = new JoystickButton(joystick1, Constants.OperatorConstants.kArmupButton);
-        JoystickButton armdown = new JoystickButton(joystick1, Constants.OperatorConstants.kArmdownButton);
+        //here is one way to handle trigger/axis inputs that act as a button but accept their analog input.
+        //this also has the onFalse for both axis triggers that executes when while true is done handled but the Trigger Class.
+        Trigger ArmUpTrigger = new Trigger(()->driveController.getRawAxis(Constants.OperatorConstants.kDRIVERightTriggerAxis) > 0.2);
+        ArmUpTrigger.whileTrue(new ArmLifterJoystickCmd(PIDArmLifterSubsystem, () -> driveController.getRawAxis(Constants.OperatorConstants.kDRIVERightTriggerAxis)));
+        ArmUpTrigger.onFalse(new InstantCommand(PIDArmLifterSubsystem::setSetpointAtCurrentPoint,PIDArmLifterSubsystem));
+        Trigger ArmDownTrigger = new Trigger(()->driveController.getRawAxis(Constants.OperatorConstants.kDRIVELeftTriggerAxis) > 0.2);
+        ArmDownTrigger.whileTrue(new ArmLifterJoystickCmd(PIDArmLifterSubsystem, () -> -driveController.getRawAxis(Constants.OperatorConstants.kDRIVELeftTriggerAxis)));
+        ArmDownTrigger.onFalse(new InstantCommand(PIDArmLifterSubsystem::setSetpointAtCurrentPoint,PIDArmLifterSubsystem));
+        //JoystickButton armup = new JoystickButton(driveController, Constants.OperatorConstants.kArmupButton);
+        //JoystickButton armdown = new JoystickButton(driveController, Constants.OperatorConstants.kArmdownButton);
         //JoystickButton armout = new JoystickButton(joystick1, Constants.OperatorConstants.kArmoutButton);
         //JoystickButton armin = new JoystickButton(joystick1, Constants.OperatorConstants.kArminButton);
 
-        armup.whileTrue(new ArmDownCMD(ArmLifterSubsystem));
-        armdown.whileTrue(new ArmUpCMD(ArmLifterSubsystem));
+        //armup.onTrue(new InstantCommand(PIDArmLifterSubsystem::setSetpointVertical,PIDArmLifterSubsystem));
+        //armdown.whileTrue(new InstantCommand(PIDArmLifterSubsystem::setSetpointGround,PIDArmLifterSubsystem));
 
         // double kStabilizationP = 0.025;
         // double kStabilizationI = 0.0001;
@@ -131,13 +144,13 @@ public class RobotContainer {
         //armin.whileTrue(new StartEndCommand(ArmExtensionSubsystem::ExtArmIn, ArmExtensionSubsystem::ExtArmStop, ArmExtensionSubsystem));
         //armout.whileTrue(new StartEndCommand(ArmExtensionSubsystem::ExtArmOut, ArmExtensionSubsystem::ExtArmStop, ArmExtensionSubsystem));
         int kArmOutHighestPoleButton = 4;//this is the Y button, the triangle button or the Top button of the xbox controller
-        int kArmOutMidestPoleButton = 3;//this is the B button, the Square button or the Right button of the xbox controller
-        int kArmOutLowestPoleButton = 1; // X button, Left button of the xbox controller
-        int kArmin = 2;// A button, bottom of 4 buttons
-        JoystickButton armHighestout = new JoystickButton(joystick1, kArmOutHighestPoleButton);
-        JoystickButton armMidestOut = new JoystickButton(joystick1, kArmOutMidestPoleButton);
-        JoystickButton armLowestOut = new JoystickButton(joystick1, kArmOutLowestPoleButton);
-        JoystickButton armIn = new JoystickButton(joystick1, kArmin);
+        int kArmOutMidestPoleButton = 2;//this is the B button, the Square button or the Right button of the xbox controller
+        int kArmOutLowestPoleButton = 3; // X button, Left button of the xbox controller
+        int kArmin = 1;// A button, bottom of 4 buttons
+        JoystickButton armHighestout = new JoystickButton(driveController, kArmOutHighestPoleButton);
+        JoystickButton armMidestOut = new JoystickButton(driveController, kArmOutMidestPoleButton);
+        JoystickButton armLowestOut = new JoystickButton(driveController, kArmOutLowestPoleButton);
+        JoystickButton armIn = new JoystickButton(driveController, kArmin);
         armHighestout.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointHighestScore,PIDArmExtensionSubsystem));
         armMidestOut.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointMidScore,PIDArmExtensionSubsystem));
         armLowestOut.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointLowScore,PIDArmExtensionSubsystem));
@@ -148,14 +161,16 @@ public class RobotContainer {
         int kHomeExtensionPOVDirection = 180;//0 is up, 180 is down
         int kHomeLassoPOVDirection = 90;//0 is up, 180 is down
         
-        POVButton HomeLifterPOV = new POVButton(joystick1, kHomeLifterPOVDirection);
-        POVButton HomeExtensionPOV = new POVButton(joystick1, kHomeExtensionPOVDirection);
-        POVButton HomeLassoPOV = new POVButton(joystick1, kHomeLassoPOVDirection);
-
-        HomeLifterPOV.whileTrue(new StartEndCommand(ArmLifterSubsystem::slowWindInBeyondSoftLimit, ArmLifterSubsystem::resetEncoder,ArmLifterSubsystem));
+        POVButton HomeLifterPOV = new POVButton(driveController, kHomeLifterPOVDirection);
+        POVButton HomeExtensionPOV = new POVButton(driveController, kHomeExtensionPOVDirection);
+        POVButton HomeLassoPOV = new POVButton(driveController, kHomeLassoPOVDirection);
+        
+        HomeLifterPOV.whileTrue(new StartEndCommand(PIDArmLifterSubsystem::slowWindInBeyondSoftLimit, PIDArmLifterSubsystem::resetEncoder,PIDArmLifterSubsystem));
         HomeExtensionPOV.whileTrue(new StartEndCommand(PIDArmExtensionSubsystem::slowWindInBeyondSoftLimit, PIDArmExtensionSubsystem::resetEncoder,PIDArmExtensionSubsystem));
         HomeLassoPOV.whileTrue(new StartEndCommand(PIDLassoSubsystem::slowWindInBeyondSoftLimit, PIDLassoSubsystem::resetEncoder,PIDLassoSubsystem));
 
+        JoystickButton turbobutton = new JoystickButton(driveController, 8);
+        turbobutton.onTrue(new InstantCommand(driveSubsystem::changeturbomode,driveSubsystem));
 
         //new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new StartEndCommand(LassoSubsystem::slowWindInBeyondSoftLimit, LassoSubsystem::resetEncoder,LassoSubsystem));
         //new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new RunCommand(LassoSubsystem::resetEncoder,LassoSubsystem));

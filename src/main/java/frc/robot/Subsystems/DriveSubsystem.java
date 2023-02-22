@@ -20,7 +20,7 @@ public class DriveSubsystem extends SubsystemBase {
     private CANSparkMax m_rightMotor;
     private CANSparkMax m_rightFollowerMotor;
     private DifferentialDrive m_robotDrive;
-  
+    private boolean turbomode = false;
 
     // private Encoder leftEncoder = new Encoder(//
     //         DriveConstants.kLeftEncoderChannelA, DriveConstants.kLeftEncoderChannelB);
@@ -56,6 +56,9 @@ public class DriveSubsystem extends SubsystemBase {
     public void periodic() {
         //SmartDashboard.putNumber("Drive encoder value", getEncoderMeters());
     }
+    public void changeturbomode(){
+        turbomode = !turbomode;
+    }
 
     public void setMotors(double leftSpeed, double rightSpeed) {
         //driveLeftMotor.set(leftSpeed);
@@ -65,6 +68,16 @@ public class DriveSubsystem extends SubsystemBase {
         // Drive with split arcade drive.
         // That means that the Y axis of the left stick moves forward
         // and backward, and the X of the right stick turns left and right.
+        if(!turbomode)
+        {
+            XSpeed = XSpeed/1.75;
+            ZRotation = ZRotation/1.5;
+        }
+        else
+        {
+            ZRotation = ZRotation/1.2;
+        }
+        
         m_robotDrive.arcadeDrive(XSpeed, ZRotation);
     }
 

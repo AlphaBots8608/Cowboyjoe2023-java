@@ -15,10 +15,11 @@ package frc.robot;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDRIVEJoystickPort = 0;
-    public static final int kDRIVEforwardReverseAxis = 0;
-    public static final int kDRIVELeftRightAxis = 1;
-    public static final int klassoMotorAxis = 3;
-
+    public static final int kDRIVEforwardReverseAxis = 1;
+    public static final int kDRIVELeftRightAxis = 0;
+    public static final int klassoMotorAxis = 5;
+    public static final int kDRIVERightTriggerAxis = 3;
+    public static final int kDRIVELeftTriggerAxis = 2;
     public static final int kArmupButton = 6;
     public static final int kArmdownButton = 8;
     public static final int kArmoutButton = 7;
@@ -33,7 +34,7 @@ public final class Constants {
     public static final int kFollowerLeftSparkMaxCanID = 10;
     public static final int kFrontRightSparkMaxCanID = 6;
     public static final int kFollowerRightSparkMaxCanID = 9;
-    public static final boolean kleftInverted = true;
+    public static final boolean kleftInverted = false;
     public static final boolean krightInverted = true;
     
   }
@@ -42,11 +43,14 @@ public final class Constants {
     public static final int kArmLifterSparkMaxCanID = 7;
 
     public static final double kminEncoderValue = 0; // this should when the arm is vertical and slightly leaning back if not straight.
-    public static final double kmaxEncoderValue = 82;// this is when the arm is horizontal and the arm is extended all the way out.
+    public static final double kmaxEncoderValue = 65;// this is when the arm is horizontal and the arm is extended all the way out.
+    public static final double kmaxEncoderValueCollapsed=65; //this is when the amr is horizontal and the arm is collapsed all the way in
+    public static final double kmaxEncoderValueExtended=60; //this is when the amr is horizontal and the arm is collapsed all the way in
 
     public static final double kArmLifterUpSpeed = 0.5;
     public static final double kArmLifterDownSpeed = -0.5;
     
+    public static final int kArmLifterSlewRate =8;
     public static int kslewrate = 10;//will be the input slew rate for the arm lifter motor
   }
 
@@ -78,7 +82,7 @@ public final class Constants {
 
    
     public static final double kminEncoderValue = 0;
-    public static final double kminEncoderValueWithCube = 96;
+    public static final double kminEncoderValueWithCube = 93;
     public static final double kEncoderValueLoopOut= 150;
     public static final double kmaxEncoderValue = 180;
 

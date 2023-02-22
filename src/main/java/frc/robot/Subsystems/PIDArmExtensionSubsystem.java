@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PIDArmExtensionSubsystem extends PIDSubsystem {
 
-  static double kP = 0.05;
+  static double kP = 0.015;
   static double kI = 0.0;
   static double kD = 0.0;
 
@@ -36,12 +36,14 @@ public class PIDArmExtensionSubsystem extends PIDSubsystem {
 
       extensionMotor_encoder.setPosition(0);
       extensionMotor.setInverted(false);
+      ;
       //lassoMotor_encoder.setVelocityConversionFactor(lassoencodercountsperinch);
       extensionMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.ArmExtensionConstants.kmaxEncoderValue);
       extensionMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.ArmExtensionConstants.kminEncoderValue);
       extensionMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
       extensionMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
       enable();//enable the pidcontroller of this subsystem
+      getController().setTolerance(100);
     }
 
   @Override
@@ -54,6 +56,7 @@ public class PIDArmExtensionSubsystem extends PIDSubsystem {
   @Override
   public void useOutput(double output, double setpoint) {
     SetSpeed(output);
+    
     SmartDashboard.putNumber("ArmExtension PID output",output);
     SmartDashboard.putNumber("ArmExtension SetPoint",setpoint);
     //m_shooterMotor.setVoltage(output + m_shooterFeedforward.calculate(setpoint));

@@ -6,19 +6,20 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems.ArmLifterSubsystem;
+import frc.robot.Subsystems.PIDArmLifterSubsystem;
 
 
 
 public class ArmLifterJoystickCmd extends CommandBase {
 
-    private final ArmLifterSubsystem ArmLifterSubsystem;
+    private final PIDArmLifterSubsystem PIDArmLifterSubsystem;
     private final Supplier<Double> speedFunction;
 
-    public ArmLifterJoystickCmd(ArmLifterSubsystem ArmLifterSubsystem, 
+    public ArmLifterJoystickCmd(PIDArmLifterSubsystem PIDArmLifterSubsystem, 
              Supplier<Double> speedFunction) {
         this.speedFunction = speedFunction;
-        this.ArmLifterSubsystem = ArmLifterSubsystem;
-        addRequirements(ArmLifterSubsystem);
+        this.PIDArmLifterSubsystem = PIDArmLifterSubsystem;
+        addRequirements(PIDArmLifterSubsystem);
     }
     @Override
     public void initialize() {
@@ -27,7 +28,9 @@ public class ArmLifterJoystickCmd extends CommandBase {
 
     @Override
     public void execute() {
-        //ArmLifterSubsystem.SetSpeed(speedFunction.get());
+        //PIDArmLifterSubsystem.SetSpeed(speedFunction.get());
+        double SetpointGain = 15;
+        PIDArmLifterSubsystem.setSetpoint(PIDArmLifterSubsystem.getMeasurement() + (SetpointGain * speedFunction.get()));
     }
 
     @Override
