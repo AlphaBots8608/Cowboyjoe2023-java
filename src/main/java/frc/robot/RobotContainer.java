@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Commands.AlignXToTargetCMD;
+import frc.robot.Commands.AlignZToTargetCMD;
 import frc.robot.Commands.ArcadeDriveCmd;
 import frc.robot.Commands.ArmDownCMD;
 import frc.robot.Commands.ArmExtStopCMD;
@@ -21,6 +23,7 @@ import frc.robot.Commands.ArmOutCMD;
 import frc.robot.Commands.ArmStopCMD;
 import frc.robot.Commands.ArmUpCMD;
 import frc.robot.Commands.LassoJoystickCmd;
+import frc.robot.Constants.XboxControllerMap;
 import frc.robot.Subsystems.ArmExtensionSubsystem;
 import frc.robot.Subsystems.ArmLifterSubsystem;
 import frc.robot.Subsystems.DriveSubsystem;
@@ -36,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 
 
 public class RobotContainer {
+
     public JoePowerDistributionPanel PDP= new JoePowerDistributionPanel();
     public final XboxController driveController = new XboxController(Constants.OperatorConstants.kDRIVEJoystickPort);
     
@@ -145,34 +149,38 @@ public class RobotContainer {
         //armout.whileTrue(new StartEndCommand(ArmExtensionSubsystem::ExtArmOut, ArmExtensionSubsystem::ExtArmStop, ArmExtensionSubsystem));
         int kArmOutHighestPoleButton = 4;//this is the Y button, the triangle button or the Top button of the xbox controller
         int kArmOutMidestPoleButton = 2;//this is the B button, the Square button or the Right button of the xbox controller
-        int kArmOutLowestPoleButton = 3; // X button, Left button of the xbox controller
         int kArmin = 1;// A button, bottom of 4 buttons
         JoystickButton armHighestout = new JoystickButton(driveController, kArmOutHighestPoleButton);
         JoystickButton armMidestOut = new JoystickButton(driveController, kArmOutMidestPoleButton);
-        JoystickButton armLowestOut = new JoystickButton(driveController, kArmOutLowestPoleButton);
-        JoystickButton armIn = new JoystickButton(driveController, kArmin);
         armHighestout.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointHighestScore,PIDArmExtensionSubsystem));
         armMidestOut.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointMidScore,PIDArmExtensionSubsystem));
-        armLowestOut.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointLowScore,PIDArmExtensionSubsystem));
+
+        JoystickButton armIn = new JoystickButton(driveController, kArmin);
         armIn.onTrue(new InstantCommand(PIDArmExtensionSubsystem::setSetpointIn,PIDArmExtensionSubsystem));
         
         //new JoystickButton(joystick1, 10).whileTrue(new InstantCommand(PIDArmExtensionSubsystem::enable,PIDArmExtensionSubsystem));
-        int kHomeLifterPOVDirection = 0;//0 is up, 180 is down
-        int kHomeExtensionPOVDirection = 180;//0 is up, 180 is down
-        int kHomeLassoPOVDirection = 90;//0 is up, 180 is down
-        
-        POVButton HomeLifterPOV = new POVButton(driveController, kHomeLifterPOVDirection);
-        POVButton HomeExtensionPOV = new POVButton(driveController, kHomeExtensionPOVDirection);
-        POVButton HomeLassoPOV = new POVButton(driveController, kHomeLassoPOVDirection);
+        JoystickButton armliftToScoring = new JoystickButton(driveController, XboxControllerMap.kXButton);
+        armliftToScoring.onTrue(new InstantCommand(PIDArmLifterSubsystem::setSetpointScore,PIDArmLifterSubsystem));
+
+        POVButton HomeLifterPOV = new POVButton(driveController, XboxControllerMap.kPOVDirectionUP);
+        POVButton HomeExtensionPOV = new POVButton(driveController, XboxControllerMap.kPOVDirectionDOWN);
+        POVButton HomeLassoPOV = new POVButton(driveController, XboxControllerMap.kPOVDirectionRIGHT);
         
         HomeLifterPOV.whileTrue(new StartEndCommand(PIDArmLifterSubsystem::slowWindInBeyondSoftLimit, PIDArmLifterSubsystem::resetEncoder,PIDArmLifterSubsystem));
         HomeExtensionPOV.whileTrue(new StartEndCommand(PIDArmExtensionSubsystem::slowWindInBeyondSoftLimit, PIDArmExtensionSubsystem::resetEncoder,PIDArmExtensionSubsystem));
         HomeLassoPOV.whileTrue(new StartEndCommand(PIDLassoSubsystem::slowWindInBeyondSoftLimit, PIDLassoSubsystem::resetEncoder,PIDLassoSubsystem));
 
-        JoystickButton turbobutton = new JoystickButton(driveController, 8);
+        JoystickButton turbobutton = new JoystickButton(driveController, XboxControllerMap.kRightStartButton);
         turbobutton.onTrue(new InstantCommand(driveSubsystem::changeturbomode,driveSubsystem));
 
-        //new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new StartEndCommand(LassoSubsystem::slowWindInBeyondSoftLimit, LassoSubsystem::resetEncoder,LassoSubsystem));
+        JoystickButton switchpipelinebutton = new JoystickButton(driveController, XboxControllerMap.kLeftSelectButton);
+        switchpipelinebutton.onTrue(new InstantCommand(limelight3Subsystem::switchPipeline,limelight3Subsystem));
+
+
+        JoystickButton AlignXButton = new JoystickButton(driveController, XboxControllerMap.kLeftStickButton);
+        AlignXButton.whileTrue(new AlignXToTargetCMD(driveSubsystem, limelight3Subsystem));   
+        JoystickButton AlignZButton = new JoystickButton(driveController, XboxControllerMap.kRightStickButton);
+        AlignZButton.whileTrue(new AlignZToTargetCMD(driveSubsystem, limelight3Subsystem));     //new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new StartEndCommand(LassoSubsystem::slowWindInBeyondSoftLimit, LassoSubsystem::resetEncoder,LassoSubsystem));
         //new JoystickButton(joystick1, Constants.OperatorConstants.kresetLassoEncoderButton).whileTrue(new RunCommand(LassoSubsystem::resetEncoder,LassoSubsystem));
     }
 

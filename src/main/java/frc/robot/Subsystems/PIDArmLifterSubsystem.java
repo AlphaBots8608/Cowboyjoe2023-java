@@ -22,9 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PIDArmLifterSubsystem extends PIDSubsystem {
  
-  static double kP = 0.03;
+  static double kP = 0.025;
   static double kI = 0.0;
-  static double kD = 0.0;
+  static double kD = 0.005;
 
   public double armliftMotorEncoderValue = 0;
   double armliftMotorEncoderVelocity = 0;
@@ -93,7 +93,7 @@ public class PIDArmLifterSubsystem extends PIDSubsystem {
     setSetpoint(80);
   }
   public void setSetpointScore() {
-    setSetpoint(60);
+    setSetpoint(Constants.ArmLifterConstants.kGoalScoringEncoderValue);
   }
   public void setSetpointVertical() {
     setSetpoint(0);

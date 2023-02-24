@@ -29,7 +29,7 @@ public class ArmLifterJoystickCmd extends CommandBase {
     @Override
     public void execute() {
         //PIDArmLifterSubsystem.SetSpeed(speedFunction.get());
-        double SetpointGain = 15;
+        double SetpointGain = 20;
         PIDArmLifterSubsystem.setSetpoint(PIDArmLifterSubsystem.getMeasurement() + (SetpointGain * speedFunction.get()));
     }
 

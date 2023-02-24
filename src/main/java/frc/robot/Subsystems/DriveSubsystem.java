@@ -1,5 +1,6 @@
 package frc.robot.Subsystems;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -50,6 +51,12 @@ public class DriveSubsystem extends SubsystemBase {
         //set follower motors
         m_leftFollowerMotor.follow(m_leftMotor);
         m_rightFollowerMotor.follow(m_rightMotor);
+
+        //feed forward is currently unused
+        double kSCimMotor = 0;
+        double kVCimMotor = 0;
+        double kACimMotor = 0;
+        SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kSCimMotor, kVCimMotor);
     }
 
     @Override

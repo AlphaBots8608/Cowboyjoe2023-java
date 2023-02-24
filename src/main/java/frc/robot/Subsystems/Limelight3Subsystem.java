@@ -22,13 +22,32 @@ public class Limelight3Subsystem extends SubsystemBase {
   }
 
   XboxController ControllerUsedToScore;
-  NetworkTable latestInfo;
+  private NetworkTable latestInfo;
+
+  public static int kpipelineAprilTags = 0;
+  public static int kpipelineRetroflectiveHighRung = 1;
+  public static int kpipelineRetroflectiveLowerRung = 2;
+
+  //Create variables
+	double targetD;
+	boolean hasTarget;
+	double xOffset;
+	double yOffset;
+	double area;
+	double skew;
+	double LEDMode;
+	double camMode;
+	double pipeline;
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     getdataToDashboard();
-    VibeOnZero();
+   // VibeOnZero();
     
+  }
+  public NetworkTable getlatestinfo() {
+    return latestInfo; 
   }
   public void VibeOnZero() {
     
@@ -49,9 +68,16 @@ public class Limelight3Subsystem extends SubsystemBase {
       {
         ControllerUsedToScore.setRumble(RumbleType.kRightRumble, .3);
       }
+      else
+      {
+        ControllerUsedToScore.setRumble(RumbleType.kRightRumble, 0);
+      }
       if(Math.abs(y) < kYClosenessForRumble && Math.abs(y) > 0.0)
       {
         ControllerUsedToScore.setRumble(RumbleType.kLeftRumble, .2);
+      }
+      else {
+        ControllerUsedToScore.setRumble(RumbleType.kLeftRumble, 0);
       }
     } 
     else 
@@ -61,23 +87,126 @@ public class Limelight3Subsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
   }
-  public void getdataToDashboard()
+  public NetworkTable getdataToDashboard()
   {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     latestInfo = table;
 
-    NetworkTableEntry tx = table.getEntry("tx");
-    NetworkTableEntry ty = table.getEntry("ty");
-    NetworkTableEntry ta = table.getEntry("ta");
-
-    //read values periodically
-    double x = tx.getDouble(0.0);
-    double y = ty.getDouble(0.0);
-    double area = ta.getDouble(0.0);
-
     //post to smart dashboard periodically
-    //SmartDashboard.putNumber("LimelightX", x);
-    //SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightArea", area);
+    //SmartDashboard.putNumber("LimelightX", getXOffset());
+    //SmartDashboard.putNumber("LimelightY", getYOffset());
+    SmartDashboard.putNumber("LimelightArea", getArea());
+    return latestInfo;
+  }
+  public boolean getHasTarget() {
+		targetD = latestInfo.getEntry("tv").getDouble(0);
+		if(targetD == 0) {
+			hasTarget = false;
+		}else if(targetD == 1) {
+			hasTarget = true;
+		}
+		return hasTarget;
+	}
+	
+	public double getXOffset() {
+		xOffset = latestInfo.getEntry("tx").getDouble(0);
+		return xOffset;
+	}
+	
+	public double getYOffset() {
+		yOffset = latestInfo.getEntry("ty").getDouble(0);
+		return yOffset;
+	}
+	
+	public double getArea() {
+		area = latestInfo.getEntry("ta").getDouble(0);
+		return area;
+	}
+	
+	public double getSkew() {
+		skew = latestInfo.getEntry("ts").getDouble(0);
+		return skew;
+	}
+	
+	public double getLEDMode() {
+		LEDMode = latestInfo.getEntry("ledMode").getDouble(1);
+		return LEDMode;
+	}
+	
+	public double getCamMode() {
+		camMode = latestInfo.getEntry("camMode").getDouble(0);
+		return camMode;
+	}
+	
+	public double getPipeline() {
+		pipeline = latestInfo.getEntry("pipeline").getDouble(0);
+		return pipeline;
+	}
+	
+	public void switchLED() {
+		if(getLEDMode() == 0) {
+			latestInfo.getEntry("ledMode").setDouble(1);
+			SmartDashboard.putString("LED Mode", "Off");
+		}else if(getLEDMode() == 1) {
+			latestInfo.getEntry("ledMode").setDouble(0);
+			SmartDashboard.putString("LED Mode", "On");
+		}else if(getLEDMode() == 2) {
+			latestInfo.getEntry("ledMode").setDouble(1);
+			SmartDashboard.putString("LED Mode", "Off");
+		}
+	}
+	
+	public void switchCamera() {
+		if(getCamMode() == 0) {
+			latestInfo.getEntry("camMode").setDouble(1);
+			SmartDashboard.putString("Camera Mode", "Camera");
+		}else if(getCamMode() == 1) {
+			latestInfo.getEntry("camMode").setDouble(0);
+			SmartDashboard.putString("Camera Mode", "Vision");
+		}
+	}
+
+  public NetworkTable switchPipeline()
+  {
+    double currentpipeline = getPipeline();
+    if(currentpipeline == kpipelineAprilTags)
+    {
+      setPipeline(kpipelineRetroflectiveHighRung);
+    }
+    else if (currentpipeline == kpipelineRetroflectiveHighRung)
+    {
+      setPipeline(kpipelineRetroflectiveLowerRung);
+    }
+    else if (currentpipeline == kpipelineRetroflectiveLowerRung)
+    {
+      setPipeline(kpipelineAprilTags);
+    }
+
+    getdataToDashboard();
+    return latestInfo;
+  }
+	
+	public void setPipeline(double pipeline) {
+		latestInfo.getEntry("pipeline").setDouble(pipeline);
+		SmartDashboard.putNumber("Camera Mode", pipeline);
+	}
+
+  public void SwitchToCameraModeWithClosestTarget()
+  {
+    //goto pipeline 0
+    setPipeline(kpipelineAprilTags);
+    var apriltaginfo = getdataToDashboard();
+    //scan for targets
+    boolean AprilTargeted = getHasTarget();
+    //goto pipeline 1 
+    setPipeline(kpipelineRetroflectiveHighRung);
+    var RetroHighRunginfo = getdataToDashboard();
+    //scan for target..
+    boolean HighRungTargeted = getHasTarget();
+    //if target found in only 1 choose that. 
+
+    
+
+    //if tartget found in both, choose the one with the lowest x value (left right offset from center)
   }
 }
