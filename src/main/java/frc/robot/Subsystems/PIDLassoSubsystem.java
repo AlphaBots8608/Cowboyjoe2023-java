@@ -28,12 +28,13 @@ public class PIDLassoSubsystem extends PIDSubsystem {
   double lassoEncoderVelocity = 0;
   private final CANSparkMax lassoMotor = new CANSparkMax(Constants.LassoConstants.klassoMotorCanID,MotorType.kBrushless);
   private RelativeEncoder lassoMotor_encoder; 
+  JoeColorSensor colorSensor;
 
-  public PIDLassoSubsystem() {
+  public PIDLassoSubsystem(JoeColorSensor thisSensor) {
       super(new PIDController(kP, kI, kD));
       setSetpoint(0);
       lassoMotor_encoder = lassoMotor.getEncoder();
-
+      this.colorSensor =  thisSensor;
       lassoMotor_encoder.setPosition(0);
       lassoMotor.setInverted(true);
       //lassoMotor_encoder.setVelocityConversionFactor(lassoencodercountsperinch);
@@ -68,9 +69,25 @@ public class PIDLassoSubsystem extends PIDSubsystem {
   public void periodic() {
     getEncoderData();
     super.periodic();// This is a PidSubsystem, we have orridden the periodic method to get encoder data... So we need to call the super periodic method to get the PID stuff to work.
+    setMinLassoEncoderValueBasedOnColor();
+  }
+  public void setMinLassoEncoderValueBasedOnColor()
+  { 
+    if (lassoEncoderVelocity < 100)
+    {
+      return;
+    }
+    boolean isLassoHeadedTowardsConeSize = (getSetpoint() <= Constants.LassoConstants.kminEncoderValueWithCone);
+    if (colorSensor.lastdetectedColor == "Cube" && isLassoHeadedTowardsConeSize)
+    {
+      //lassospeed = thisspeed/2;
+      setSetpointLassoCube();
+      // if we are pulling in a cube, then we can only retract the lasso to a certain point
+      //lassoMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.LassoConstants.kminEncoderValueWithCube);
+
+    }
 
   }
-  
   public void slowWindInBeyondSoftLimit() {
     disable(); //disable the pidcontroller of this subsystem
     double slowretractspeed = -.1;
@@ -123,7 +140,7 @@ public class PIDLassoSubsystem extends PIDSubsystem {
    * 
    * feed this a color sensor and speed from an axis of -1 to 1
    */
-  public void SetlassoSpeed(JoeColorSensor thisSensor,double thisspeed) {
+  public void SetlassoSpeed(double thisspeed) {
     double lassospeed = 0;
 
     if(thisspeed > 0.2)//if we are letting the lasso out at all
@@ -133,7 +150,7 @@ public class PIDLassoSubsystem extends PIDSubsystem {
 
     //final speed divider if you are pulling in a cube. This is a safety feature to prevent the lasso from pulling in the cube too fast and breaking it. 
     // todo make this look at amperage on motor and stop if it is too high (ie the motor is stalled or the lasso is pulled tight enough)
-    if (thisspeed < -0.2 && thisSensor.lastdetectedColor == "Cube")
+    if (thisspeed < -0.2 && colorSensor.lastdetectedColor == "Cube")
     {
       //lassospeed = thisspeed/2;
       setSetpointLassoCube();

@@ -49,7 +49,7 @@ public class RobotContainer {
     public Limelight3Subsystem limelight3Subsystem = new Limelight3Subsystem(driveController);
     // private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     // private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    public PIDLassoSubsystem PIDLassoSubsystem = new PIDLassoSubsystem();
+    public PIDLassoSubsystem PIDLassoSubsystem = new PIDLassoSubsystem(CSensor);
     //public ArmExtensionSubsystem ArmExtensionSubsystem = new ArmExtensionSubsystem();
     public PIDArmExtensionSubsystem PIDArmExtensionSubsystem = new PIDArmExtensionSubsystem();
     //public ArmLifterSubsystem ArmLifterSubsystem = new ArmLifterSubsystem();

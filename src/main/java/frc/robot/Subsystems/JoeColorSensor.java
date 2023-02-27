@@ -21,7 +21,7 @@ public class JoeColorSensor extends SubsystemBase {
   public String lastdetectedColor = "";
   int objectdistance = 0;
   //raise the division factor to slow down how often this happens. 
-  int divisionfactor = 10;
+  int divisionfactor = 2;
   int currentPass = 0;
   public JoeColorSensor()
   {

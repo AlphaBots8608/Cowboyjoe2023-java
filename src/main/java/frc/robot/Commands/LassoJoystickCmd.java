@@ -31,7 +31,7 @@ public class LassoJoystickCmd extends CommandBase {
 
     @Override
     public void execute() {
-        PIDLassoSubsystem.SetlassoSpeed(Colorsensor,speedFunction.get());
+        PIDLassoSubsystem.SetlassoSpeed(speedFunction.get());
     }
 
     @Override

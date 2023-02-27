@@ -83,16 +83,17 @@ public class PIDArmExtensionSubsystem extends PIDSubsystem {
   }
 
   public void slowWindInBeyondSoftLimit() {
-    
+    disable();
     double slowretractspeed = -.2;
     extensionMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
     //extensionMotor_encoder.setPosition(Constants.ArmExtensionConstants.kmaxEncoderValue);//we could disable soft limit here but this is "safer" because you ALWAYS call reset encoder after.
     SetSpeed(slowretractspeed);
   }
   public void resetEncoder() {
+    extensionMotor_encoder.setPosition(0);
     extensionMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     setSetpointIn();//might as well set the setpoint to 0 to it doesnt appear to run away after finding 0.
-    extensionMotor_encoder.setPosition(0);
+    enable();
   }
 
     public void getEncoderData()

@@ -98,15 +98,15 @@ public final class Constants {
     //double ConeSpeed = .75;
 
     public static final double kminEncoderValue = 0;
-    public static final double kmaxEncoderValue = 345;
+    public static final double kmaxEncoderValue = 220;
 
     public static final double kArmOutSpeed = 0.75;
     public static final double kArmInSpeed = -0.75;
 
     public static final int kArmExtensionSlewRate = 10;
 
-    public static final double kHighestGoalEncoderValue = 342;
-    public static final double kMidestGoalEncoderValue = 40;
+    public static final double kHighestGoalEncoderValue = 195;
+    public static final double kMidestGoalEncoderValue = 30;
     public static final double kLowestGoalEncoderValue = 0;
   }
 
